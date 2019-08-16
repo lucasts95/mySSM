@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.MenuInfoMapper">
+
+    <resultMap id="menuInfoMap" type="com.qf.pojo.MenuInfo">
+        <id column="mid" property="mid"></id>
+        <result column="menuname" property="menuName"></result>
+        <result column="menuicon" property="menuIcon"></result>
+        <result column="menu_url" property="menuUrl"></result>
+        <result column="parentId" property="parentId"></result>
+
+        <!--List<MenuInfo> childMenus;-->
+        <collection property="childMenus" ofType="com.qf.pojo.MenuInfo">
+            <id column="cmid" property="mid"></id>
+            <result column="cname" property="menuName"></result>
+            <result column="cicon" property="menuIcon"></result>
+            <result column="curl" property="menuUrl"></result>
+            <result column="cpid" property="parentId"></result>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="menuInfoVoMap" type="com.qf.vo.MenuInfoVO">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="pid" property="pid"></result>
+        <result column="picon" property="icon"></result>
+
+        <collection property="children" ofType="com.qf.vo.MenuInfoVO">
+            <id column="cid" property="id"></id>
+            <result column="cname" property="name"></result>
+            <result column="menu_url" property="url"></result>
+            <result column="cpid" property="pid"></result>
+            <result column="checked" property="checked"></result>
+            <result column="cicon" property="icon"></result>
+        </collection>
+
+    </resultMap>
+
+    <select id="listParentMenu" resultMap="menuInfoMap">
+        select m1.*,m2.mid cmid,m2.menuname cname,m2.menuicon cicon,m2.menu_url curl,m2.parentid cpid
+        from menuinfo m1,menuinfo m2 where m1.parentid is null and m1.mid = m2.parentid
+    </select>
+
+
+    <select id="listMenuByRoleId" resultMap="menuInfoVoMap" parameterType="int">
+        <!-- 未被选择集合-->
+        select m2.mid id,m2.menuname name,m2.parentid pid,m1.mid cid,m1.menuname cname,m1.parentid cpid,m1.menu_url,'0'
+        checked ,m1.menuicon cicon,m2.menuicon picon from menuinfo m1,menuinfo m2 where m1.mid not in
+        (select mid from role_menu rm where roleid = #{roleId}) and m1.parentid = m2.mid
+        union
+        <!-- 被选择集合-->
+        select m2.mid id,m2.menuname name,m2.parentid pid,m1.mid cid,m1.menuname cname,m1.parentid cpid,m1.menu_url,'1'
+        checked ,m1.menuicon cicon,m2.menuicon picon from menuinfo m1,menuinfo m2 where m1.mid in
+        (select mid from role_menu rm where roleid = #{roleId}) and m1.parentid = m2.mid
+    </select>
+
+
+    <delete id="removeRoleMenuByMenuId" parameterType="com.qf.dto.ModifyRoleMenuDTO">
+        DELETE FROM role_menu where roleid = #{roleId}
+        <if test="menuIds!=null and menuIds.size()!=0">
+            and mid not in(
+            <foreach collection="menuIds" item="menuid" separator=",">
+                #{menuid}
+            </foreach>
+            )
+        </if>
+    </delete>
+
+    <select id="listRoleMenuByRoleId" parameterType="com.qf.dto.ModifyRoleMenuDTO" resultType="com.qf.pojo.RoleMenu">
+          select * from role_menu where roleid = #{roleId}
+    </select>
+
+    <insert id="addRoleMenuByRoleId" parameterType="com.qf.dto.ModifyRoleMenuDTO">
+        <if test="menuIds!=null and menuIds.size()!=0">
+            insert into role_menu(rmid,roleid,mid) VALUES
+            <foreach collection="menuIds" item="menuid" separator=",">
+                (DEFAULT,#{roleId},#{menuid})
+            </foreach>
+        </if>
+    </insert>
+    <select id="listAllMenu" resultType="com.qf.vo.MenuListVO">
+        select *,isnull(parentid) parentMenu from menuinfo
+    </select>
+
+</mapper>

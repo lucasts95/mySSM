@@ -1,0 +1,53 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.RoleInfoMapper">
+    <resultMap id="roleInfoMap" type="com.qf.pojo.RoleInfo">
+        <id column="roleid" property="roleid"></id>
+        <result column="rolename" property="rolename"></result>
+        <result column="shortname" property="shortname"></result>
+        <collection property="menuInfoList" ofType="com.qf.pojo.MenuInfo">
+            <id column="mid" property="mid"></id>
+            <result column="menuname" property="menuName"></result>
+            <result column="menuicon" property="menuIcon"></result>
+            <result column="menu_url" property="menuUrl"></result>
+            <result column="parentid" property="parentId"></result>
+        </collection>
+        <collection property="userInfoList" ofType="com.qf.pojo.UserInfo">
+            <id property="userid" column="userid"></id>
+            <result property="password" column="password"></result>
+            <result property="username" column="username"></result>
+            <result property="account" column="account"></result>
+            <result property="email" column="email"></result>
+            <result property="mobile" column="mobile"></result>
+            <result property="areaCode" column="areacode"></result>
+            <result property="status" column="status"></result>
+            <result property="icon" column="icon"></result>
+        </collection>
+    </resultMap>
+
+    <select id="selectRoleInfoById" resultMap="roleInfoMap" parameterType="int">
+        select u.*,r.*,m.* from roleinfo r,role_menu rm,menuinfo m,user_role ur,userinfo u
+        where r.roleid =#{roleid} and r.roleid = rm.roleid and rm.mid = m.mid
+        and u.userid = ur.userid and ur.roleid = r.roleid
+    </select>
+
+    <!--view object-->
+    <select id="listRoleByUserId" resultType="com.qf.vo.RoleInfoVO" parameterType="int">
+    SELECT *,'0' selected from roleinfo r where r.roleid not in(
+    select r.roleid a from roleinfo r left join user_role ur on ur.roleid = r.roleid where userid =#{userid}
+    )
+    UNION
+    SELECT *,'1' selected from roleinfo r where r.roleid  in(
+    select r.roleid a from roleinfo r left join user_role ur on ur.roleid = r.roleid where userid =#{userid}
+    )
+    </select>
+
+    <insert id="addUserRole" parameterType="com.qf.dto.UserRoleDTO">
+        insert into user_role values(DEFAULT ,#{userId},#{roleId})
+    </insert>
+
+    <delete id="removeUserRole" parameterType="com.qf.dto.UserRoleDTO">
+        delete from user_role where userid = #{userId} and roleid = #{roleId}
+    </delete>
+</mapper>

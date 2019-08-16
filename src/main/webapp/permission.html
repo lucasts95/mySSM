@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="GB18030">
+<head>
+    <meta charset="GB18030">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/doc.min.css">
+    <link rel="stylesheet" href="ztree/zTreeStyle.css">
+    <style>
+        .tree li {
+            list-style-type: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <div><a class="navbar-brand" style="font-size:32px;" href="#">众筹平台 - 许可维护</a></div>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li style="padding-top:8px;">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-success dropdown-toggle"
+                                data-toggle="dropdown">
+                            <i class="glyphicon glyphicon-user"></i> 张三 <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#"><i class="glyphicon glyphicon-cog"></i> 个人设置</a></li>
+                            <li><a href="#"><i class="glyphicon glyphicon-comment"></i> 消息</a></li>
+                            <li class="divider"></li>
+                            <li><a href="index.html"><i class="glyphicon glyphicon-off"></i> 退出系统</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li style="margin-left:10px;padding-top:8px;">
+                    <button type="button" class="btn btn-default btn-danger">
+                        <span class="glyphicon glyphicon-question-sign"></span> 帮助
+                    </button>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="Search...">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <div class="tree">
+            </div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="glyphicon glyphicon-th"></i> 数据列表</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-inline" role="form" style="float:left;">
+                        <div class="form-group has-feedback">
+                            <div class="input-group">
+                                <div class="input-group-addon">菜单名称</div>
+                                <input class="form-control has-success" type="text" placeholder="请输入"
+                                       id="menuNameInput">
+                                <div class="input-group-addon">菜单类别</div>
+                                <input class="form-control has-success" type="text" placeholder="请输入"
+                                       id="menuTypeInput">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-warning" onclick="initPage()"><i
+                                class="glyphicon glyphicon-search"></i> 查询
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-danger" style="float:right;margin-left:10px;"><i
+                            class=" glyphicon glyphicon-remove"></i> 删除
+                    </button>
+                    <button type="button" class="btn btn-primary" style="float:right;"
+                            onclick="window.location.href='add.html'"><i class="glyphicon glyphicon-plus"></i> 新增
+                    </button>
+                    <br>
+                    <hr style="clear:both;">
+                    <div class="table-responsive">
+                        <table class="table  table-bordered" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th width="30">#</th>
+                                <th width="30"><input type="checkbox"></th>
+                                <th>菜单名称</th>
+                                <th>菜单地址</th>
+                                <th>是否为父菜单</th>
+                                <th width="100">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><input type="checkbox"></td>
+                                <td>Lorem</td>
+                                <td>ipsum</td>
+                                <td>dolor</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-xs"><i
+                                            class=" glyphicon glyphicon-pencil"></i></button>
+                                    <button type="button" class="btn btn-danger btn-xs"><i
+                                            class=" glyphicon glyphicon-remove"></i></button>
+                                </td>
+                            </tr>
+
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="6" align="center">
+                                    <ul class="pagination">
+                                        <li class="disabled"><a href="#">上一页</a></li>
+                                        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                                        <li><a href="#">2</a></li>
+                                        <li><a href="#">3</a></li>
+                                        <li><a href="#">4</a></li>
+                                        <li><a href="#">5</a></li>
+                                        <li><a href="#">下一页</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">帮助</h4>
+            </div>
+            <div class="modal-body">
+                <div class="bs-callout bs-callout-info">
+                    <h4>没有默认类</h4>
+                    <p>警告框没有默认类，只有基类和修饰类。默认的灰色警告框并没有多少意义。所以您要使用一种有意义的警告类。目前提供了成功、消息、警告或危险。</p>
+                </div>
+                <div class="bs-callout bs-callout-info">
+                    <h4>没有默认类</h4>
+                    <p>警告框没有默认类，只有基类和修饰类。默认的灰色警告框并没有多少意义。所以您要使用一种有意义的警告类。目前提供了成功、消息、警告或危险。</p>
+                </div>
+            </div>
+            <!--
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            -->
+        </div>
+    </div>
+</div>
+<script src="jquery/jquery-2.1.1.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="script/docs.min.js"></script>
+<script src="ztree/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript">
+    $(".tree").load("menu.html");
+</script>
+<script>
+    function initPage(){
+        var pageNum = window.location.search.split("=")[1];
+        var requestURL = "menuinfo/listAllMenu";
+        if(pageNum!=null){
+            requestURL+="?pageNum="+pageNum;
+        }
+        //1.从后台的listAllUserInfo接口获取数据
+        $.ajax({
+            //请求方式GET/POST
+            type : "GET",
+            //请求的媒体类型
+            contentType: "application/json;charset=UTF-8",
+            //接受数据类型
+            dataType:"json",
+            //请求地址
+            url : requestURL,
+            //数据，json字符串
+//                data:JSON.stringify({
+//                    "username":$("#usernameInput").val(),
+//                    "email":$("#emailInput").val()
+//                }),
+            //请求成功
+            success : function(result) {
+                $("#dataTable tbody").html("");
+                console.log(result);
+                //$
+                //js对象和jquery是不一样的，基本不能互相操作，得靠$()转换
+                //如果不写data。result就是一个字符串，要进行jquery还要进行$(result)操作
+//                    console.log(result);
+                //2.将数据填充到table中
+                $(result.list).each(function(index,item){
+                    var trStr = "<tr>";
+                    //获取id并拼接
+                    trStr+="<td>"+item.mid+"</td>";
+                    trStr+="<td><input type=\"checkbox\"></td>";
+                    trStr+="<td>"+item.menuname+"</td>";
+                    trStr+="<td>"+item.menu_url+"</td>";
+                    trStr+="<td>"+item.parentType+"</td>";
+                    trStr+="<td>";
+                    trStr+="<button type=\"button\" class='btn btn-primary btn-xs'><i class=' glyphicon glyphicon-pencil' onclick=''></i></button>&nbsp;"
+                    trStr+="<button type=\"button\" class='btn btn-danger btn-xs'><i class=' glyphicon glyphicon-remove' onclick=''></i></button>"
+                    trStr+="</td>";
+                    trStr+="</tr>";
+                    $("#dataTable").append(trStr);
+                });
+
+                var splitePageStr = "<li class=\"disabled\"><a href=\"#\">上一页</a></li>";
+                for(var i=1;i<=result.pages;i++){
+                    splitePageStr +="<li><a href=\"permission.html?pageNum="+i+"\">"+i+"</a></li>";
+                }
+                splitePageStr += "<li><a href=\"#\">下一页</a></li>";
+                $(".pagination").html("");
+                $(".pagination").append(splitePageStr);
+            },
+            //请求失败，包含具体的错误信息
+            error : function(e){
+                console.error(e);
+                console.log(e.status);
+                console.log(e.responseText);
+            }
+        });
+    }
+    initPage();
+
+
+</script>
+</body>
+</html>

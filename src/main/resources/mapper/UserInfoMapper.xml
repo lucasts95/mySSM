@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.UserInfoMapper">
+
+    <select id="getAllUserInfo" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo where status = 1
+    </select>
+
+    <select id="loginCheck" resultType="com.qf.pojo.UserInfo" parameterType="com.qf.pojo.UserInfo">
+        SELECT * FROM userinfo where username = #{username} and password = #{password}
+    </select>
+
+    <insert id="register" parameterType="com.qf.pojo.UserInfo">
+        insert into userinfo(userid,
+        username,
+        password,account,email,mobile,areacode,status,icon)
+        values(DEFAULT,#{username},#{password},#{account},#{email},#{mobile},#{areaCode},#{status},#{icon})
+    </insert>
+
+    <!--删除id为1的用户信息-->
+    <delete id="deleteUserById" parameterType="int">
+      update userinfo set status = 0 where userid = #{id}
+    </delete>
+
+    <resultMap id="userInfoMap" type="com.qf.pojo.MenuInfo">
+        <id column="pid" property="mid"></id>
+        <result column="pname" property="menuName"></result>
+        <result column="picon" property="menuIcon"></result>
+        <result column="purl" property="menuUrl"></result>
+        <collection property="childMenus" ofType="com.qf.pojo.MenuInfo">
+            <id column="mid" property="mid"></id>
+            <result column="menuname" property="menuName"></result>
+            <result column="menuicon" property="menuIcon"></result>
+            <result column="menu_url" property="menuUrl"></result>
+            <result column="parentid" property="parentId"></result>
+        </collection>
+    </resultMap>
+    <!--用户登录所需菜单信息-->
+    <select id="userLoginInit" resultMap="userInfoMap" parameterType="com.qf.pojo.UserInfo">
+      select m.mid pid,m.menuname pname,m.menuicon picon,m.menu_url purl,tb1.*from menuinfo m right join
+     (select m.* from userinfo u,user_role ur,roleinfo r,role_menu rm,menuinfo m
+        where u.username = #{username} and u.password = #{password} and ur.userid = u.userid and r.roleid = ur.roleid and rm.roleid = r.roleid and m.mid = rm.mid and parentid is not null and status = 1 order by mid)tb1
+				on m.mid = tb1.parentid
+    </select>
+
+
+    <select id="listAll" resultType="com.qf.pojo.UserInfo" parameterType="com.qf.dto.SearchUserInfoDTO">
+        select * from userinfo where status = 1
+        <if test="username != null and username != ''">
+            and username = #{username}
+        </if>
+        <if test="email !=null and email!=''">
+            and email = #{email}
+        </if>
+    </select>
+
+    <update id="removeUserInfoById" parameterType="int">
+        update userinfo set status = 0 where userid = #{id}
+    </update>
+
+    <select id="getUserInfoById" parameterType="int" resultType="com.qf.pojo.UserInfo">
+        select * from userinfo where status = 1 and userid = #{userid}
+    </select>
+
+    <update id="editUserInfoById" parameterType="com.qf.pojo.UserInfo">
+        update userinfo set
+        <trim suffixOverrides=",">
+            <if test="username !=null and username!=''">
+                username = #{username},
+            </if>
+            <if test="password !=null and password!=''">
+                password = #{password},
+            </if>
+            <if test="account !=null and account!=''">
+                account = #{account},
+            </if>
+            <if test="email !=null and email!=''">
+                email = #{email},
+            </if>
+            <if test="mobile !=null and mobile!=''">
+                mobile = #{mobile},
+            </if>
+            <if test="areaCode !=null and areaCode!=''">
+                areaCode = #{areaCode},
+            </if>
+            <if test="icon !=null and icon!=''">
+                icon = #{icon},
+            </if>
+        </trim>
+        where userid = #{userid}
+    </update>
+</mapper>
